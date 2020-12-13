@@ -1,5 +1,7 @@
 package pl.sda.testing.fortuneWatcher;
 
+import java.math.BigDecimal;
+
 class Notifier {
 
     void warnAboutStalePrice() {
@@ -8,5 +10,9 @@ class Notifier {
 
     void warnAboutLowFortune() {
         System.out.println("EMAIL: YOUR FORTUNE DROPPED BELOW 1 MILLION PLN");
+    }
+
+    void notifyAboutFortune(BigDecimal currentFortune) {
+        System.out.println("EMAIL: Your gold is worth " + currentFortune);
     }
 }

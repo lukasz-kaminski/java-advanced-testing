@@ -8,17 +8,15 @@ import java.util.Optional;
 class FortuneWatcher {
     private static final BigDecimal LEAST_ACCEPTABLE_FORTUNE_PLN = new BigDecimal(1_000_000);
 
-    private final Fortune fortune;
     private final GoldPriceProvider goldPriceProvider;
     private final Notifier notifier;
 
-    FortuneWatcher(Fortune fortune, GoldPriceProvider goldPriceProvider, Notifier notifier) {
-        this.fortune = fortune;
+    FortuneWatcher(GoldPriceProvider goldPriceProvider, Notifier notifier) {
         this.goldPriceProvider = goldPriceProvider;
         this.notifier = notifier;
     }
 
-    BigDecimal assessFortune() {
+    BigDecimal assessFortune(Fortune fortune) {
         BigDecimal goldPrice;
         Optional<BigDecimal> todaysGoldPrice = goldPriceProvider.getTodaysPrice();
         if(todaysGoldPrice.isEmpty()) {
