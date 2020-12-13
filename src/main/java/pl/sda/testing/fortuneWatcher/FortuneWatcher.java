@@ -3,6 +3,7 @@ package pl.sda.testing.fortuneWatcher;
 import pl.sda.testing.fortuneWatcher.provider.GoldPriceProvider;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Optional;
 
 class FortuneWatcher {
@@ -30,6 +31,15 @@ class FortuneWatcher {
         if(fortuneInPLN.compareTo(LEAST_ACCEPTABLE_FORTUNE_PLN) < 0) {
             notifier.warnAboutLowFortune();
         }
+
+        Optional<BigDecimal> yesterdaysPrice = goldPriceProvider.getPriceForDate(LocalDate.now().minusDays(1L));
+        if(yesterdaysPrice.isPresent()) {
+            BigDecimal yesterdaysFortune = yesterdaysPrice.get().multiply(fortune.getGoldKgs());
+            if(yesterdaysFortune.compareTo(fortuneInPLN) > 0) {
+                notifier.notifyAboutDroppingPrice(yesterdaysFortune);
+            }
+        }
+
         return fortuneInPLN;
     }
 }

@@ -15,4 +15,8 @@ class Notifier {
     void notifyAboutFortune(BigDecimal currentFortune) {
         System.out.println("EMAIL: Your gold is worth " + currentFortune);
     }
+
+    public void notifyAboutDroppingPrice(BigDecimal yesterdaysFortune) {
+        System.out.println("EMAIL: Your gold was worth more yesterday: " + yesterdaysFortune);
+    }
 }
