@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -35,7 +36,9 @@ class FortuneWatcherTest {
         //when
         BigDecimal fortune = fortuneWatcher.assessFortune(Fortune.ofGoldKgs(new BigDecimal(100)));
         //then
-        assertEquals(new BigDecimal(100000), fortune);
+        assertThat(fortune)
+                .isEqualTo("100000");
+//        assertEquals(new BigDecimal(100000), fortune);
     }
 
     @Test
