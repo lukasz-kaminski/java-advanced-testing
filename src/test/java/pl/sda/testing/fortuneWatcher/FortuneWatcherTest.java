@@ -2,14 +2,12 @@ package pl.sda.testing.fortuneWatcher;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InOrder;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.sda.testing.fortuneWatcher.provider.GoldPriceProvider;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -79,6 +77,39 @@ class FortuneWatcherTest {
         inOrder.verify(mockNotifier).warnAboutLowFortune();
         inOrder.verify(mockNotifier).warnAboutStalePrice();
         inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    void shouldSendEmailWhenYesterdaysFortuneIsBigger() {
+        //given
+        when(mockGoldPriceProvider.getPriceForDate(eq(LocalDate.now().minusDays(1L))))
+                .thenReturn(Optional.of(new BigDecimal(100)));
+        when(mockGoldPriceProvider.getTodaysPrice())
+                .thenReturn(Optional.of(new BigDecimal(50)));
+
+        //when
+        fortuneWatcher.assessFortune(Fortune.ofGoldKgs(BigDecimal.ONE));
+        //then
+        verify(mockNotifier).notifyAboutDroppingPrice(eq(new BigDecimal(100)));
+    }
+
+    @Test
+    void should() {
+        //given
+        ArgumentCaptor<BigDecimal> captor = ArgumentCaptor.forClass(BigDecimal.class);
+
+        when(mockGoldPriceProvider.getPriceForDate(eq(LocalDate.now().minusDays(1L))))
+                .thenReturn(Optional.of(new BigDecimal(100)));
+        when(mockGoldPriceProvider.getTodaysPrice())
+                .thenReturn(Optional.of(new BigDecimal(50)));
+
+        //when
+        fortuneWatcher.assessFortune(Fortune.ofGoldKgs(BigDecimal.ONE));
+        //then
+        verify(mockNotifier).notifyAboutDroppingPrice(captor.capture());
+
+        assertEquals(new BigDecimal(100), captor.getValue());
+
     }
 
 }
