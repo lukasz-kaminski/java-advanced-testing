@@ -2,16 +2,17 @@ package pl.sda.testing.fortuneWatcher;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.verification.VerificationMode;
 import pl.sda.testing.fortuneWatcher.provider.GoldPriceProvider;
 
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 
@@ -25,6 +26,7 @@ class FortuneWatcherTest {
 
     @InjectMocks
     FortuneWatcher fortuneWatcher;
+//    FortuneWatcher fortuneWatcher = new FortuneWatcher(mockGoldPriceProvider, mockNotifier);
 
     @Test
     void shouldCalculateFortuneAmount() {
@@ -32,10 +34,6 @@ class FortuneWatcherTest {
         when(mockGoldPriceProvider.getTodaysPrice())
                 .thenReturn(Optional.of(new BigDecimal(1000)));
 
-        FortuneWatcher fortuneWatcher = new FortuneWatcher(
-                mockGoldPriceProvider,
-                mockNotifier
-        );
         //when
         BigDecimal fortune = fortuneWatcher.assessFortune(Fortune.ofGoldKgs(new BigDecimal(100)));
         //then
@@ -48,11 +46,6 @@ class FortuneWatcherTest {
         when(mockGoldPriceProvider.getTodaysPrice())
                 .thenReturn(Optional.of(BigDecimal.ONE));
 
-        FortuneWatcher fortuneWatcher = new FortuneWatcher(
-                ,
-                mockGoldPriceProvider,
-                mockNotifier
-        );
         //when
         fortuneWatcher.assessFortune(Fortune.ofGoldKgs(new BigDecimal(100)));
         //then
@@ -65,10 +58,6 @@ class FortuneWatcherTest {
         when(mockGoldPriceProvider.getTodaysPrice())
                 .thenReturn(Optional.of(new BigDecimal(10000)));
 
-        FortuneWatcher fortuneWatcher = new FortuneWatcher(
-                mockGoldPriceProvider,
-                mockNotifier
-        );
         //when
         fortuneWatcher.assessFortune(Fortune.ofGoldKgs(new BigDecimal(100000)));
         //then
@@ -83,17 +72,13 @@ class FortuneWatcherTest {
 
         when(mockGoldPriceProvider.getLastAvailableGoldPrice())
                 .thenReturn(BigDecimal.ONE);
-
-        FortuneWatcher fortuneWatcher = new FortuneWatcher(
-                mockGoldPriceProvider,
-                mockNotifier
-        );
         //when
         fortuneWatcher.assessFortune(Fortune.ofGoldKgs(new BigDecimal(100)));
         //then
-        verify(mockNotifier).warnAboutLowFortune();
-        verify(mockNotifier).warnAboutStalePrice();
-        verifyNoMoreInteractions(mockNotifier);
+        InOrder inOrder = inOrder(mockNotifier);
+        inOrder.verify(mockNotifier).warnAboutLowFortune();
+        inOrder.verify(mockNotifier).warnAboutStalePrice();
+        inOrder.verifyNoMoreInteractions();
     }
 
 }
